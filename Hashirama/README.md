@@ -41,6 +41,11 @@ This script will:
 3.  **Start the Dashboard** automatically at `http://localhost:3000`.
 4.  Start the Controller and stream logs to your terminal.
 
+> **⚠️ Developer Note (Apple Silicon Users):**
+> By default, this operator deploys a lightweight `nginx` placeholder image. This is a strategic workaround strictly for local testing on Apple Silicon (M1/M2/M3) chips due to current upstream compatibility issues.
+>
+> **Please Note:** This project is fully architected for and compatible with standard open-source ecosystems (Ubuntu, Debian, Linux) and production cloud environments (AWS, GCP). For standard deployments, the operator natively supports the official `madara:latest` sequencer image without modification—simply update the `image` field in your CRD.
+
 ---
 
 ## 🛠 Manual Installation
