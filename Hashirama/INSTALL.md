@@ -1,103 +1,97 @@
 # 📥 Installation Guide for Hashirama Operator
 
-This guide provides step-by-step instructions on how to install, verify, and use the Hashirama Kubernetes Operator.
+This guide provides step-by-step instructions on how to install, verify, and use the **Hashirama Kubernetes Operator** and its **Dashboard**.
 
 ## ✅ Prerequisites
 
 Before you begin, ensure you have the following installed:
 
-*   **Kubernetes Cluster**: You can use a local cluster like [Kind](https://kind.sigs.k8s.io/) or Minikube, or a remote cloud cluster.
-*   **kubectl**: The Kubernetes command-line tool. [Install instructions](https://kubernetes.io/docs/tasks/tools/).
+*   [**Git**](https://git-scm.com/)
+*   [**Docker**](https://www.docker.com/) (Required for Kind)
+*   [**Kind**](https://kind.sigs.k8s.io/) (To run the local cluster)
+*   [**kubectl**](https://kubernetes.io/docs/tasks/tools/) (To interact with the cluster)
+*   [**Node.js & npm**](https://nodejs.org/) (Required for the Dashboard)
 
 ---
 
-## 🚀 Option 1: Quick Install (Recommended)
+## �️ Step-by-Step Installation
 
-You can install the operator directly from the internet without downloading the repository.
+### 1. 📥 Clone the Repository
 
-1.  **Create a Kubernetes Cluster** (if you don't have one):
-    *We recommend using [Kind](https://kind.sigs.k8s.io/) for local testing.*
+First, download the project code to your local machine.
 
+```sh
+git clone https://github.com/bytemaster333/Hashirama.git
+cd Hashirama
+```
+
+### 2. 🚀 Create the Cluster
+
+Start your local Kubernetes cluster using Kind. **This must be done first.**
+
+```sh
+kind create cluster --name hashirama
+```
+
+### 3. 📦 Install the Operator
+
+Apply the installation manifest to your cluster.
+
+```sh
+kubectl apply -f Hashirama/dist/install.yaml
+```
+
+*(This installs the Namespace, CRDs, Roles, and the Controller Manager)*
+
+### 4. 🖥️ Activate the Dashboard
+
+The dashboard provides a web interface to manage your chains.
+
+1.  Navigate to the dashboard directory:
     ```sh
-    kind create cluster --name hashirama
+    cd dashboard
     ```
 
-2.  **Run the install command**:
-
+2.  Install dependencies:
     ```sh
-    kubectl apply -f https://raw.githubusercontent.com/bytemaster333/Hashirama/main/Hashirama/dist/install.yaml
+    npm install
     ```
 
-    *This command installs all necessary components: Namespace, Custom Resource Definitions (CRDs), RBAC Roles, and the Controller Manager.*
-
-2.  **Verify Installation**:
-
-    Check if the operator pod is running:
-
+3.  Start the development server:
     ```sh
-    kubectl get pods -n hashirama-system
+    npm run dev
     ```
 
-    You should see a pod named `hashirama-controller-manager-xxx` with status `Running`.
+4.  **Open your browser** to: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 📦 Option 2: Install from Source
+## 🎮 Usage
 
-If you prefer to download the code first or want to inspect the files:
+You can now use the Dashboard to create chains visually, or use `kubectl` manually.
 
-1.  **Clone the Repository**:
+### Creating a Chain via CLI
 
-    ```sh
-    git clone https://github.com/bytemaster333/Hashirama.git
-    cd Hashirama
-    ```
-
-2.  **Create a Kubernetes Cluster**:
-
-    ```sh
-    kind create cluster --name hashirama
-    ```
-
-3.  **Install the Operator**:
-
-    ```sh
-    kubectl apply -f Hashirama/dist/install.yaml
-    ```
-
-3.  **Verify Installation**:
-
-    ```sh
-    kubectl get pods -n hashirama-system
-    ```
-
----
-
-## 🛠 Usage: Creating a MadaraChain
-
-Once installed, you can deploy your own `MadaraChain`.
-
-1.  **Create a YAML file** (e.g., `my-chain.yaml`):
+1.  **Create a file** `my-chain.yaml`:
 
     ```yaml
     apiVersion: batch.starknet.l3/v1alpha1
     kind: MadaraChain
     metadata:
-      name: my-first-chain
+      name: demo-chain
     spec:
-      chainID: "SN_L3_DEMO"
+      chainID: "SN_L3_001"
       replicas: 1
       port: 9944
-      image: "ghcr.io/madara-alliance/madara:latest" 
     ```
 
-2.  **Apply the configuration**:
+2.  **Apply it**:
 
     ```sh
     kubectl apply -f my-chain.yaml
     ```
 
-3.  **Check the Chain status**:
+3.  **Check Status**:
 
     ```sh
     kubectl get madarachains
@@ -105,12 +99,13 @@ Once installed, you can deploy your own `MadaraChain`.
 
 ---
 
-## 🗑️ Uninstall
+## 🗑️ Cleanup
 
-To remove the operator and all related resources from your cluster:
+To stop everything:
 
-```sh
-kubectl delete -f https://raw.githubusercontent.com/bytemaster333/Hashirama/main/Hashirama/dist/install.yaml
-```
+1.  **Delete the cluster**:
+    ```sh
+    kind delete cluster --name hashirama
+    ```
 
-*(Or if you cloned the repo: `kubectl delete -f Hashirama/dist/install.yaml`)*
+2.  **Stop the dashboard**: Press `Ctrl + C` in your terminal.
