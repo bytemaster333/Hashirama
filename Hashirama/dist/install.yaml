@@ -482,7 +482,7 @@ spec:
           readOnlyRootFilesystem: true
         volumeMounts: []
       securityContext:
-        runAsNonRoot: true
+        runAsNonRoot: false
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: hashirama-controller-manager
