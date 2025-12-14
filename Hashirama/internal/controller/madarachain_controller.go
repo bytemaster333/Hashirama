@@ -109,7 +109,7 @@ func (r *MadaraChainReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	}
 
 	// Update Service if needed
-	if foundSvc.Spec.Ports[0].TargetPort != svc.Spec.Ports[0].TargetPort {
+	if len(foundSvc.Spec.Ports) > 0 && len(svc.Spec.Ports) > 0 && foundSvc.Spec.Ports[0].TargetPort != svc.Spec.Ports[0].TargetPort {
 		foundSvc.Spec.Ports = svc.Spec.Ports
 		log.Info("Updating Service", "Service.Namespace", foundSvc.Namespace, "Service.Name", foundSvc.Name)
 		err = r.Update(ctx, foundSvc)
