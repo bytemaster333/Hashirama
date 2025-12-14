@@ -6,11 +6,13 @@
 
 ## 🚀 Quick Start (One-Liner)
 
-You can install the operator with a single command:
+You can set up the environment easily using the provided script.
 
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/bytemaster333/Hashirama/main/Hashirama/dist/install.yaml
+./setup.sh
 ```
+
+For manual steps, please see [INSTALL.md](INSTALL.md).
 
 ## 🛠 Usage
 
