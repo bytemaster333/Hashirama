@@ -1,0 +1,8 @@
+apiVersion: batch.starknet.l3/v1alpha1
+kind: MadaraChain
+metadata:
+  name: madarachain-sample
+spec:
+  chainID: "my-l3-chain"
+  replicas: 1
+  port: 9944
