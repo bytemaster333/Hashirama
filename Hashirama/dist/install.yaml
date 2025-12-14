@@ -480,6 +480,8 @@ spec:
             drop:
             - ALL
           readOnlyRootFilesystem: true
+          runAsNonRoot: false
+          runAsUser: 0
         volumeMounts: []
       securityContext:
         runAsNonRoot: false

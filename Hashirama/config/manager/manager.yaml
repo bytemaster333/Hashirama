@@ -67,6 +67,8 @@ spec:
         name: manager
         ports: []
         securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
           readOnlyRootFilesystem: true
           allowPrivilegeEscalation: false
           capabilities:
