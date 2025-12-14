@@ -9,7 +9,36 @@
 You can install the operator with a single command:
 
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/example/hashirama/main/dist/install.yaml
+kubectl apply -f https://raw.githubusercontent.com/bytemaster333/Hashirama/main/Hashirama/dist/install.yaml
+```
+
+## 🛠 Usage
+
+Once the operator is installed, you can create a **MadaraChain** easily.
+
+1. **Create a YAML file** (e.g., `chain.yaml`):
+
+```yaml
+apiVersion: batch.starknet.l3/v1alpha1
+kind: MadaraChain
+metadata:
+  name: my-chain
+spec:
+  chainID: "SN_L3_001"
+  replicas: 1
+  port: 9944
+```
+
+2. **Apply it**:
+
+```sh
+kubectl apply -f chain.yaml
+```
+
+3. **Check status**:
+
+```sh
+kubectl get madarachains
 ```
 
 ## Getting Started
