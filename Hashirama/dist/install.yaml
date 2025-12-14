@@ -483,6 +483,7 @@ spec:
         volumeMounts: []
       securityContext:
         runAsNonRoot: false
+        runAsUser: 0
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: hashirama-controller-manager

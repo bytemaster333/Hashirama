@@ -53,6 +53,8 @@ spec:
       securityContext:
         # For more details, see: https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
         runAsNonRoot: false
+        # runAsUser: 0 ensures we can run as root (nginx default) if needed
+        runAsUser: 0
         seccompProfile:
           type: RuntimeDefault
       containers:
