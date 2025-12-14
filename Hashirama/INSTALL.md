@@ -1,111 +1,79 @@
-# 📥 Installation Guide for Hashirama Operator
+# 📥 Installation Guide
 
-This guide provides step-by-step instructions on how to install, verify, and use the **Hashirama Kubernetes Operator** and its **Dashboard**.
+Follow these steps to set up the Hashirama Operator and Dashboard for local development.
 
-## ✅ Prerequisites
+## 1. Create Cluster
 
-Before you begin, ensure you have the following installed:
-
-*   [**Git**](https://git-scm.com/)
-*   [**Docker**](https://www.docker.com/) (Required for Kind)
-*   [**Kind**](https://kind.sigs.k8s.io/) (To run the local cluster)
-*   [**kubectl**](https://kubernetes.io/docs/tasks/tools/) (To interact with the cluster)
-*   [**Node.js & npm**](https://nodejs.org/) (Required for the Dashboard)
-
----
-
-## �️ Step-by-Step Installation
-
-### 1. 📥 Clone the Repository
-
-First, download the project code to your local machine.
-
-```sh
-git clone https://github.com/bytemaster333/Hashirama.git
-cd Hashirama
-```
-
-### 2. 🚀 Create the Cluster
-
-Start your local Kubernetes cluster using Kind. **This must be done first.**
+Create a local Kubernetes cluster using Kind (if it doesn't exist).
 
 ```sh
 kind create cluster --name hashirama
 ```
 
-### 3. 📦 Install the Operator
+## 2. Install CRDs
 
-Apply the installation manifest to your cluster.
+Navigate to the operator directory and install the Custom Resource Definitions into your cluster.
 
 ```sh
-kubectl apply -f Hashirama/dist/install.yaml
+cd Hashirama
+make install
 ```
 
-*(This installs the Namespace, CRDs, Roles, and the Controller Manager)*
+## 3. Run Controller Locally
 
-### 4. 🖥️ Activate the Dashboard
+Run the controller on your host machine. This allows for faster development cycles.
 
-The dashboard provides a web interface to manage your chains.
+```sh
+make run
+```
+
+*Keep this terminal window open to keep the controller running.*
+
+## 4. Deploy Sample
+
+Open a new terminal. You can edit the sample file `config/samples/batch_v1alpha1_madarachain.yaml` or use the following configuration:
+
+```yaml
+apiVersion: batch.starknet.l3/v1alpha1
+kind: MadaraChain
+metadata:
+  name: madarachain-sample
+spec:
+  chainID: "my-l3-chain"
+  replicas: 1
+  port: 9944
+```
+
+Apply it to the cluster:
+
+```sh
+kubectl apply -f config/samples/batch_v1alpha1_madarachain.yaml
+```
+
+> [!NOTE]
+> **ARM64 Workaround**: The controller is currently configured to use `nginx:latest` as a placeholder because the official Madara image does not support ARM64. To revert to the official image, modify `internal/controller/madarachain_controller.go` to remove the hardcoded nginx image and restore the original arguments.
+
+## 5. Dashboard
+
+I have created a Next.js dashboard to manage your chains visually.
+
+### Run Dashboard:
 
 1.  Navigate to the dashboard directory:
     ```sh
-    cd dashboard
+    cd ../dashboard
     ```
+    *(Assuming you are still in `Hashirama` directory)*
 
-2.  Install dependencies:
+2.  Install and Run:
     ```sh
     npm install
-    ```
-
-3.  Start the development server:
-    ```sh
     npm run dev
     ```
 
-4.  **Open your browser** to: [http://localhost:3000](http://localhost:3000)
+### Access:
 
----
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 🎮 Usage
-
-You can now use the Dashboard to create chains visually, or use `kubectl` manually.
-
-### Creating a Chain via CLI
-
-1.  **Create a file** `my-chain.yaml`:
-
-    ```yaml
-    apiVersion: batch.starknet.l3/v1alpha1
-    kind: MadaraChain
-    metadata:
-      name: demo-chain
-    spec:
-      chainID: "SN_L3_001"
-      replicas: 1
-      port: 9944
-    ```
-
-2.  **Apply it**:
-
-    ```sh
-    kubectl apply -f my-chain.yaml
-    ```
-
-3.  **Check Status**:
-
-    ```sh
-    kubectl get madarachains
-    ```
-
----
-
-## 🗑️ Cleanup
-
-To stop everything:
-
-1.  **Delete the cluster**:
-    ```sh
-    kind delete cluster --name hashirama
-    ```
-
-2.  **Stop the dashboard**: Press `Ctrl + C` in your terminal.
+- You can view existing chains.
+- Click **"Create Chain"** to deploy a new one.
