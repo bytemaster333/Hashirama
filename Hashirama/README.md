@@ -1,174 +1,102 @@
-# hashirama
-// TODO(user): Add simple overview of use/purpose
+# 🏯 Hashirama: Kubernetes Operator for Starknet L3s
 
-## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
+**Hashirama** is a powerful Kubernetes Operator designed to automate the deployment and management of **Starknet Layer 3 (L3)** appchains using [Madara](https://github.com/keep-starknet-strange/madara).
 
-## 🚀 Quick Start (One-Liner)
+It simplifies the complexity of running a zk-rollup by providing a cloud-native, declarative API.
 
-You can set up the environment easily using the provided script.
+![Starknet](https://img.shields.io/badge/Starknet-L3-blue)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Operator-326ce5)
+![Status](https://img.shields.io/badge/Status-Alpha-orange)
 
-```sh
+---
+
+## ✨ Features
+
+*   **Declarative API**: Define your L3 chain as a simple Kubernetes Custom Resource (`MadaraChain`).
+*   **One-Click Deployment**: Automates the creation of StatefulSets, Services, and storage configurations.
+*   **Visual Dashboard**: Includes a built-in Next.js dashboard to manage your chains visually.
+*   **Local Development Friendly**: Comes with a "One-Click" setup script for automated local testing with Kind.
+
+---
+
+## 🚀 Quick Start (Local Development)
+
+We provide a specialized script that automates the entire setup process (Cluster creation, CRD installation, Dashboard setup, and Controller execution).
+
+**Prerequisites:**
+*   [Docker](https://www.docker.com/)
+*   [Kind](https://kind.sigs.k8s.io/)
+*   [kubectl](https://kubernetes.io/docs/tasks/tools/)
+*   [Node.js](https://nodejs.org/) (for Dashboard)
+
+**Run the Setup Script:**
+
+```bash
 ./setup.sh
 ```
 
-For manual steps, please see [INSTALL.md](INSTALL.md).
+This script will:
+1.  Check/Install the Kind cluster.
+2.  Install the Operator.
+3.  **Start the Dashboard** automatically at `http://localhost:3000`.
+4.  Start the Controller and stream logs to your terminal.
 
-## 🛠 Usage
+---
 
-Once the operator is installed, you can create a **MadaraChain** easily.
+## 🛠 Manual Installation
 
-1. **Create a YAML file** (e.g., `chain.yaml`):
+If you prefer to install manually or are deploying to a shared cluster, please see our detailed [**Installation Guide (INSTALL.md)**](INSTALL.md).
+
+---
+
+## 🎮 Usage
+
+You can create a Starknet L3 chain using `kubectl` or the Dashboard.
+
+### Creating a Chain (YAML)
+
+Create a file named `chain.yaml`:
 
 ```yaml
 apiVersion: batch.starknet.l3/v1alpha1
 kind: MadaraChain
 metadata:
-  name: my-chain
+  name: my-starknet-appchain
 spec:
-  chainID: "SN_L3_001"
+  chainID: "SN_APPCHAIN_001"
   replicas: 1
   port: 9944
 ```
 
-2. **Apply it**:
+Apply it:
 
-```sh
+```bash
 kubectl apply -f chain.yaml
 ```
 
-3. **Check status**:
+The operator will immediately spin up the necessary pods and services.
 
-```sh
-kubectl get madarachains
-```
+---
 
-## Getting Started
+## 🏗 Architecture
 
-### Prerequisites
-- go version v1.24.6+
-- docker version 17.03+.
-- kubectl version v1.11.3+.
-- Access to a Kubernetes v1.11.3+ cluster.
+The project consists of two main components:
 
-### To Deploy on the cluster
-**Build and push your image to the location specified by `IMG`:**
+1.  **Controller Manager**: Included in `./cmd` and `./internal`. It watches for `MadaraChain` resources and reconciles the cluster state.
+2.  **Dashboard**: Located in the [`dashboard/`](./dashboard) directory. A Next.js application that interacts with the Kubernetes API to provide a UI.
 
-```sh
-make docker-build docker-push IMG=<some-registry>/hashirama:tag
-```
+---
 
-**NOTE:** This image ought to be published in the personal registry you specified.
-And it is required to have access to pull the image from the working environment.
-Make sure you have the proper permission to the registry if the above commands don’t work.
+## 🤝 Contributing
 
-**Install the CRDs into the cluster:**
+Contributions are welcome!
 
-```sh
-make install
-```
+1.  Fork the repository.
+2.  Create your feature branch (`git checkout -b feature/amazing-feature`).
+3.  Commit your changes (`git commit -m 'Add some amazing feature'`).
+4.  Push to the branch (`git push origin feature/amazing-feature`).
+5.  Open a Pull Request.
 
-**Deploy the Manager to the cluster with the image specified by `IMG`:**
+---
 
-```sh
-make deploy IMG=<some-registry>/hashirama:tag
-```
-
-> **NOTE**: If you encounter RBAC errors, you may need to grant yourself cluster-admin
-privileges or be logged in as admin.
-
-**Create instances of your solution**
-You can apply the samples (examples) from the config/sample:
-
-```sh
-kubectl apply -k config/samples/
-```
-
->**NOTE**: Ensure that the samples has default values to test it out.
-
-### To Uninstall
-**Delete the instances (CRs) from the cluster:**
-
-```sh
-kubectl delete -k config/samples/
-```
-
-**Delete the APIs(CRDs) from the cluster:**
-
-```sh
-make uninstall
-```
-
-**UnDeploy the controller from the cluster:**
-
-```sh
-make undeploy
-```
-
-## Project Distribution
-
-Following the options to release and provide this solution to the users.
-
-### By providing a bundle with all YAML files
-
-1. Build the installer for the image built and published in the registry:
-
-```sh
-make build-installer IMG=<some-registry>/hashirama:tag
-```
-
-**NOTE:** The makefile target mentioned above generates an 'install.yaml'
-file in the dist directory. This file contains all the resources built
-with Kustomize, which are necessary to install this project without its
-dependencies.
-
-2. Using the installer
-
-Users can just run 'kubectl apply -f <URL for YAML BUNDLE>' to install
-the project, i.e.:
-
-```sh
-kubectl apply -f https://raw.githubusercontent.com/<org>/hashirama/<tag or branch>/dist/install.yaml
-```
-
-### By providing a Helm Chart
-
-1. Build the chart using the optional helm plugin
-
-```sh
-kubebuilder edit --plugins=helm/v2-alpha
-```
-
-2. See that a chart was generated under 'dist/chart', and users
-can obtain this solution from there.
-
-**NOTE:** If you change the project, you need to update the Helm Chart
-using the same command above to sync the latest changes. Furthermore,
-if you create webhooks, you need to use the above command with
-the '--force' flag and manually ensure that any custom configuration
-previously added to 'dist/chart/values.yaml' or 'dist/chart/manager/manager.yaml'
-is manually re-applied afterwards.
-
-## Contributing
-// TODO(user): Add detailed information on how you would like others to contribute to this project
-
-**NOTE:** Run `make help` for more information on all potential `make` targets
-
-More information can be found via the [Kubebuilder Documentation](https://book.kubebuilder.io/introduction.html)
-
-## License
-
-Copyright 2025.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+**Built with ❤️ for the Starknet Community.**
