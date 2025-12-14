@@ -15,7 +15,14 @@ Before you begin, ensure you have the following installed:
 
 You can install the operator directly from the internet without downloading the repository.
 
-1.  **Run the install command**:
+1.  **Create a Kubernetes Cluster** (if you don't have one):
+    *We recommend using [Kind](https://kind.sigs.k8s.io/) for local testing.*
+
+    ```sh
+    kind create cluster --name hashirama
+    ```
+
+2.  **Run the install command**:
 
     ```sh
     kubectl apply -f https://raw.githubusercontent.com/bytemaster333/Hashirama/main/Hashirama/dist/install.yaml
@@ -46,7 +53,13 @@ If you prefer to download the code first or want to inspect the files:
     cd Hashirama
     ```
 
-2.  **Install the Operator**:
+2.  **Create a Kubernetes Cluster**:
+
+    ```sh
+    kind create cluster --name hashirama
+    ```
+
+3.  **Install the Operator**:
 
     ```sh
     kubectl apply -f Hashirama/dist/install.yaml
