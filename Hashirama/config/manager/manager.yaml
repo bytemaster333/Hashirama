@@ -62,12 +62,8 @@ spec:
         name: manager
         ports: []
         securityContext:
-          runAsUser: 0
           readOnlyRootFilesystem: false
           allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - "ALL"
         livenessProbe:
           httpGet:
             path: /healthz
