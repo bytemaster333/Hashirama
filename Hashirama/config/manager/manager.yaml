@@ -58,7 +58,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        image: nginx:latest
+      - image: nginx:latest
         name: manager
         ports: []
         securityContext:

@@ -446,7 +446,7 @@ spec:
         control-plane: controller-manager
     spec:
       containers:
-        image: nginx:latest
+      - image: nginx:latest
         livenessProbe:
           httpGet:
             path: /healthz
