@@ -18,9 +18,11 @@ It simplifies the complexity of running a zk-rollup by providing a cloud-native,
 *   **Local Development Friendly**: Comes with a "One-Click" setup script for automated local testing with Kind.
 
 > **⚠️ Developer Note (Apple Silicon Users):**
-> By default, this operator deploys a lightweight `nginx` placeholder image. This is a strategic workaround strictly for local testing on Apple Silicon (M1/M2/M3) chips due to current upstream compatibility issues.
+> The official Madara image is currently **AMD64 only**.
 >
-> **Please Note:** This project is fully architected for and compatible with standard open-source ecosystems (Ubuntu, Debian, Linux) and production cloud environments (AWS, GCP). For standard deployments, the operator natively supports the official `madara:latest` sequencer image without modification—simply update the `image` field in your CRD.
+> On Apple Silicon (M1/M2/M3), our `setup.sh` script automatically handles a workaround by loading the image via Docker's Rosetta emulation. **No manual action is required**—just run the script!
+>
+> **Production Note:** The operator uses the official `ghcr.io/madara-alliance/madara:latest` image. It is fully compatible with standard Linux/Cloud environments (AWS, GCP, Ubuntu) out of the box.
 
 ---
 
@@ -71,6 +73,7 @@ spec:
   chainID: "SN_APPCHAIN_001"
   replicas: 1
   port: 9944
+  network: "sepolia" # Options: sepolia (default), mainnet, devnet
 ```
 
 Apply it:
