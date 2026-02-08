@@ -46,6 +46,11 @@ spec:
                 default: ghcr.io/madara-alliance/madara:latest
                 description: Image is the Madara docker image.
                 type: string
+              network:
+                default: sepolia
+                description: Network is the Starknet network to connect to (mainnet,
+                  sepolia, devnet).
+                type: string
               port:
                 default: 9944
                 description: Port is the RPC port to expose (default to 9944).

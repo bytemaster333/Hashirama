@@ -39,6 +39,10 @@ type MadaraChainSpec struct {
 	// Image is the Madara docker image.
 	// +kubebuilder:default="ghcr.io/madara-alliance/madara:latest"
 	Image string `json:"image,omitempty"`
+
+	// Network is the Starknet network to connect to (mainnet, sepolia, devnet).
+	// +kubebuilder:default="sepolia"
+	Network string `json:"network,omitempty"`
 }
 
 // MadaraChainStatus defines the observed state of MadaraChain.

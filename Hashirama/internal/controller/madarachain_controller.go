@@ -22,6 +22,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -133,6 +134,11 @@ func (r *MadaraChainReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 func (r *MadaraChainReconciler) statefulSetForMadaraChain(m *batchv1alpha1.MadaraChain) *appsv1.StatefulSet {
 	labels := map[string]string{"app": "madara", "madara_cr": m.Name}
 	replicas := m.Spec.Replicas
+	// Default to sepolia if not specified
+	network := m.Spec.Network
+	if network == "" {
+		network = "sepolia"
+	}
 
 	sts := &appsv1.StatefulSet{
 		ObjectMeta: metav1.ObjectMeta{
@@ -151,15 +157,42 @@ func (r *MadaraChainReconciler) statefulSetForMadaraChain(m *batchv1alpha1.Madar
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{
 						Name:  "madara",
-						Image: "nginx:latest", // Temporary placeholder for ARM64 verification
-						// Args removed for nginx
+						Image: "ghcr.io/madara-alliance/madara:latest",
+						Args: []string{
+							"--name", m.Name,
+							"--data-dir", "/var/lib/madara",
+							"--rpc-port", "9944",
+							"--network", network,
+							"--rpc-external",
+							"--rpc-cors", "all",
+						},
 						Ports: []corev1.ContainerPort{{
-							ContainerPort: 80, // nginx default port
-							Name:          "http",
+							ContainerPort: 9944,
+							Name:          "rpc",
 						}},
+						VolumeMounts: []corev1.VolumeMount{{
+							Name:      "data",
+							MountPath: "/var/lib/madara",
+						}},
+						ImagePullPolicy: corev1.PullIfNotPresent,
 					}},
 				},
 			},
+			VolumeClaimTemplates: []corev1.PersistentVolumeClaim{{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "data",
+				},
+				Spec: corev1.PersistentVolumeClaimSpec{
+					AccessModes: []corev1.PersistentVolumeAccessMode{
+						corev1.ReadWriteOnce,
+					},
+					Resources: corev1.VolumeResourceRequirements{
+						Requests: corev1.ResourceList{
+							corev1.ResourceStorage: resource.MustParse("10Gi"),
+						},
+					},
+				},
+			}},
 		},
 	}
 	// Set owner reference
@@ -179,7 +212,7 @@ func (r *MadaraChainReconciler) serviceForMadaraChain(m *batchv1alpha1.MadaraCha
 			Selector: labels,
 			Ports: []corev1.ServicePort{{
 				Port:       m.Spec.Port,
-				TargetPort: intstr.FromInt(80), // Map to nginx port
+				TargetPort: intstr.FromInt(9944),
 				Protocol:   corev1.ProtocolTCP,
 			}},
 			Type: corev1.ServiceTypeClusterIP,

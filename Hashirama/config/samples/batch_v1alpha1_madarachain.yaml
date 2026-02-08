@@ -6,3 +6,4 @@ spec:
   chainID: "my-l3-chain"
   replicas: 1
   port: 9944
+  network: "sepolia"
